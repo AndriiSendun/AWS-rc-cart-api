@@ -1,31 +1,29 @@
 import { Injectable } from '@nestjs/common';
-
+import { Repository } from 'sequelize-typescript';
 import { v4 } from 'uuid';
-
-import { Cart } from '../models';
+import { Cart, CartStatusEnum } from '../models';
 
 @Injectable()
 export class CartService {
-  private userCarts: Record<string, Cart> = {};
+  constructor(private cartsRepository: Repository<Cart>) {}
 
-  findByUserId(userId: string): Cart {
-    return this.userCarts[ userId ];
+  findByUserId(userId: string): Promise<Cart> {
+    return this.cartsRepository.findOne({
+      where: { user_id: userId }
+    });
   }
 
-  createByUserId(userId: string) {
-    const id = v4(v4());
-    const userCart = {
-      id,
+  createByUserId(userId: string): Promise<Cart> {
+    return this.cartsRepository.create({
+      id: v4(),
+      user_id: userId,
+      status: CartStatusEnum.OPEN,
       items: [],
-    };
-
-    this.userCarts[ userId ] = userCart;
-
-    return userCart;
+    });;
   }
 
-  findOrCreateByUserId(userId: string): Cart {
-    const userCart = this.findByUserId(userId);
+  async findOrCreateByUserId(userId: string): Promise<Cart> {
+    const userCart = await this.findByUserId(userId);
 
     if (userCart) {
       return userCart;
@@ -34,22 +32,16 @@ export class CartService {
     return this.createByUserId(userId);
   }
 
-  updateByUserId(userId: string, { items }: Cart): Cart {
-    const { id, ...rest } = this.findOrCreateByUserId(userId);
+  async updateByUserId(userId: string, { items }: Cart): Promise<Cart> {
+    const cart = await this.findByUserId(userId);
+    const updatedCart = await cart.update({ items });
 
-    const updatedCart = {
-      id,
-      ...rest,
-      items: [ ...items ],
-    }
-
-    this.userCarts[ userId ] = { ...updatedCart };
-
-    return { ...updatedCart };
+    return updatedCart;
   }
 
-  removeByUserId(userId): void {
-    this.userCarts[ userId ] = null;
-  }
+  async removeByUserId(userId): Promise<void> {
+    const cart = await this.findByUserId(userId);
 
+    cart.destroy();
+  }
 }

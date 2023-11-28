@@ -14,10 +14,9 @@ CREATE TABLE IF NOT EXISTS carts (
 );
 
 CREATE TABLE IF NOT EXISTS cart_items (
-    cart_id UUID,
+    cart_id UUID PRIMARY,
     product_id UUID,
     count INT,
-    PRIMARY KEY (cart_id, product_id),
     FOREIGN KEY (cart_id) REFERENCES carts(id)
 );
 

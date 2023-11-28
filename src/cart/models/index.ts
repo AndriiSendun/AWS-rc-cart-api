@@ -1,17 +1,69 @@
-export type Product = {
-  id: string,
-  title: string,
-  description: string,
-  price: number,
-};
+import {
+  Table,
+  Column,
+  Model,
+  ForeignKey,
+  PrimaryKey,
+  CreatedAt,
+  UpdatedAt,
+  BelongsTo
+} from 'sequelize-typescript';
 
-
-export type CartItem = {
-  product: Product,
-  count: number,
+export enum CartStatusEnum {
+  OPEN,
+  ORDERED
 }
 
-export type Cart = {
-  id: string,
-  items: CartItem[],
+@Table
+export class Product extends Model {
+  @PrimaryKey
+  @Column
+  id!: string;
+
+  @Column
+  title!: string;
+
+  @Column
+  description!: string;
+
+  @Column
+  price!: number;
+}
+
+@Table
+export class CartItem extends Model {
+  @ForeignKey(() => Product)
+  @Column
+  cart_id!: string;
+
+  @Column
+  product_id!: string;
+
+  @Column
+  count!: number;
+
+  @BelongsTo(() => Product)
+  product: Product
+}
+
+@Table
+export class Cart extends Model {
+  @PrimaryKey
+  @Column
+  id!: string;
+
+  @Column
+  user_id: string;
+
+  @CreatedAt
+  created_at: Date;
+
+  @UpdatedAt
+  updated_at: Date;
+
+  @Column
+  status: CartStatusEnum
+
+  @Column
+  items: CartItem[]
 }
