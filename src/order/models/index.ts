@@ -1,9 +1,9 @@
-import { Column, Model, Table, HasMany } from 'sequelize-typescript';
-import { CartItem } from 'src/cart/models';
+import { Column, Model, Table, PrimaryKey } from 'sequelize-typescript';
 
 @Table
 export class Order extends Model {
-  @Column({ primaryKey: true })
+  @PrimaryKey
+  @Column
   id!: string;
 
   @Column
@@ -12,23 +12,20 @@ export class Order extends Model {
   @Column
   cartId!: string;
 
-  @HasMany(() => CartItem)
-  items!: CartItem[];
-
   @Column
   paymentType!: string;
 
   @Column
-  payment_address?: any;
+  paymentAddress?: string;
 
   @Column
-  payment_credit_card?: any;
+  paymentCreditCard?: string;
 
   @Column
-  delivery_type!: string;
+  deliveryType!: string;
 
   @Column
-  delivery_address!: any;
+  deliveryAddress!: string;
 
   @Column
   comments!: string;

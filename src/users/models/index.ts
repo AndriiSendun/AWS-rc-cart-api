@@ -6,6 +6,11 @@ import {
   PrimaryKey,
 } from 'sequelize-typescript';
 
+export interface UserDto {
+  name: string;
+  password: string;
+}
+
 @Table
 export class User extends Model {
   @PrimaryKey

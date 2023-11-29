@@ -1,22 +1,26 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/sequelize';
 import { Repository } from 'sequelize-typescript';
 import { v4 } from 'uuid';
 import { Cart, CartStatusEnum } from '../models';
 
 @Injectable()
 export class CartService {
-  constructor(private cartsRepository: Repository<Cart>) {}
+  constructor(
+    @InjectModel(Cart)
+    private readonly _cartModel: typeof Cart,
+  ) {}
 
   findByUserId(userId: string): Promise<Cart> {
-    return this.cartsRepository.findOne({
-      where: { user_id: userId }
+    return this._cartModel.findOne({
+      where: { userId }
     });
   }
 
   createByUserId(userId: string): Promise<Cart> {
-    return this.cartsRepository.create({
+    return this._cartModel.create({
       id: v4(),
-      user_id: userId,
+      userId,
       status: CartStatusEnum.OPEN,
       items: [],
     });;

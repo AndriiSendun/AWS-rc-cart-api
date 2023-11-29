@@ -6,7 +6,9 @@ import {
   PrimaryKey,
   CreatedAt,
   UpdatedAt,
-  BelongsTo
+  BelongsTo,
+  HasMany,
+  DataType
 } from 'sequelize-typescript';
 
 export enum CartStatusEnum {
@@ -30,14 +32,17 @@ export class Product extends Model {
   price!: number;
 }
 
+
+
 @Table
 export class CartItem extends Model {
+  @Column
+  @ForeignKey(() => Cart)
+  cartId!: string;
+
   @ForeignKey(() => Product)
   @Column
-  cart_id!: string;
-
-  @Column
-  product_id!: string;
+  productId!: string;
 
   @Column
   count!: number;
@@ -46,6 +51,7 @@ export class CartItem extends Model {
   product: Product
 }
 
+
 @Table
 export class Cart extends Model {
   @PrimaryKey
@@ -53,17 +59,17 @@ export class Cart extends Model {
   id!: string;
 
   @Column
-  user_id: string;
+  userId: string;
 
   @CreatedAt
-  created_at: Date;
+  createdAt: Date;
 
   @UpdatedAt
-  updated_at: Date;
+  updatedAt: Date;
 
   @Column
   status: CartStatusEnum
 
-  @Column
+  @Column(DataType.ARRAY(DataType.JSONB))
   items: CartItem[]
 }

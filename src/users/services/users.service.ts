@@ -1,28 +1,29 @@
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/sequelize';
+import { Repository } from 'sequelize-typescript';
 
 import { v4 } from 'uuid';
 
-import { User } from '../models';
+import { User, UserDto } from '../models';
 
 @Injectable()
 export class UsersService {
-  private readonly users: Record<string, User>;
+  constructor(
+    @InjectModel(User)
+    private readonly _userModel: typeof User,
+  ) {}
 
-  constructor() {
-    this.users = {}
+  findOne(name: string): Promise<User> {
+    return this._userModel.findOne({ where: { name }})
   }
 
-  findOne(userId: string): User {
-    return this.users[ userId ];
+  async createOne({ name, password }: UserDto): Promise<User> {
+    const id = v4();
+
+    return this._userModel.create({
+      id,
+      name: name || id,
+      password
+    })
   }
-
-  createOne({ name, password }: User): User {
-    const id = v4(v4());
-    const newUser = { id: name || id, name, password };
-
-    this.users[ id ] = newUser;
-
-    return newUser;
-  }
-
 }
