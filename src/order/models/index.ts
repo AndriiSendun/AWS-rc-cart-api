@@ -1,20 +1,38 @@
-import { CartItem } from '../../cart/models';
+import { Column, Model, Table, PrimaryKey } from 'sequelize-typescript';
 
-export type Order = {
-  id?: string,
-  userId: string;
-  cartId: string;
-  items: CartItem[]
-  payment: {
-    type: string,
-    address?: any,
-    creditCard?: any,
-  },
-  delivery: {
-    type: string,
-    address: any,
-  },
-  comments: string,
-  status: string;
-  total: number;
+@Table
+export class Order extends Model {
+  @PrimaryKey
+  @Column
+  id!: string;
+
+  @Column
+  userId!: string;
+
+  @Column
+  cartId!: string;
+
+  @Column
+  paymentType!: string;
+
+  @Column
+  paymentAddress?: string;
+
+  @Column
+  paymentCreditCard?: string;
+
+  @Column
+  deliveryType!: string;
+
+  @Column
+  deliveryAddress!: string;
+
+  @Column
+  comments!: string;
+
+  @Column
+  status!: string;
+
+  @Column
+  total!: number;
 }
